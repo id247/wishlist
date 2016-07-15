@@ -38,18 +38,29 @@
 		}
 	}
 
-	&--m{
-		border-radius: 8px;
-		font-weight: 700;
-		font-size: 12px;
-		padding: 8px 20px 8px;
+	&--orange{
+		background: orange;
+		color: #fff;
+		&:hover{
+			background: lighten(orange, 5%);
+		}
+		&:active{
+			background: darken(orange, 5%);
+		}
 	}
 
-	&--l{
+	&--m{
 		border-radius: 8px;
 		font-weight: 700;
 		font-size: 15px;
 		padding: 10px 20px 10px;
+	}
+
+	&--l{
+		border-radius: 10px;
+		font-weight: 700;
+		font-size: 18px;
+		padding: 15px 30px 15px;
 	}
 
 	&--block{

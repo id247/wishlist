@@ -8,9 +8,180 @@
 	position: relative;
 }
 
+.wrap{
+	max-width: 960px;
+	margin: auto;
+	@include clearfix;
+}
+
 /* ==========================================================================
  * main
  * ========================================================================== */
 
+/* ==========================================================================
+ * page
+ * ========================================================================== */
 
- 
+
+.page{
+
+	&__section{
+		margin: 0 0 50px;
+		&:last-child{
+			margin-bottom: 0;
+		}
+	}
+}
+
+/* ==========================================================================
+ * header
+ * ========================================================================== */
+
+.header{
+	padding: 20px 0;
+}
+
+/* ==========================================================================
+ * menu
+ * ========================================================================== */
+
+.menu{
+
+	&__list{
+		margin: 0 0 -20px;
+	}
+
+	&__item{
+		display: inline-block;
+		vertical-align: top;
+		margin: 0 0 20px 15px;
+		&:first-child{
+			margin-left: 0;
+		}
+	}
+
+	&__href{
+		&.active{
+			border-color: transparent;
+		}
+	}
+}
+
+/* ==========================================================================
+ * main
+ * ========================================================================== */
+
+.main{
+
+	&__catalog{
+		float: left;
+		width: 60%;
+	}
+
+	&__wishlist{
+		float: right;
+		width: 35%;
+	}
+}
+
+/* ==========================================================================
+ * catalog
+ * ========================================================================== */
+
+.catalog{
+
+	&__category{
+		
+	}
+
+	&__item{
+		margin: 0 0 20px;
+		&:last-child{
+			margin-bottom: 0;
+		}
+	}
+}
+
+.catalog-item{
+	@include clearfix;
+
+	&__image-placeholder{
+		float: left;
+		width: 200px;
+		overflow: hidden;
+	}
+
+	&__image{
+		width: 100%;
+		height: auto;
+	}
+
+	&__content{
+		margin: 0 0 0 220px;
+	}
+
+	&__title{
+		margin: 0 0 20px;
+		font-size: 20px;
+	}
+
+	&__text{
+		margin: 0 0 20px;
+	}
+
+	&__button-placeholder{
+		text-align: center;
+	}
+}
+
+/* ==========================================================================
+ * wishlist
+ * ========================================================================== */
+
+.wishlist{
+	
+	&__list{
+		
+	}
+
+	&__item{
+		margin: 0 0 20px;
+	}
+
+	&__button-placeholder{
+		text-align: center;
+	}
+
+	&__button{
+		
+	}
+}
+
+.wishlist-item{
+	@include clearfix;
+
+	&__image-placeholder{
+		float: left;
+		width: 100px;
+		overflow: hidden;
+	}
+
+	&__image{
+		width: 100%;
+		height: auto;
+	}
+
+	&__content{
+		margin: 0 0 0 110px;
+	}
+
+	&__title{
+		margin: 0 0 20px;
+		font-size: 20px;
+	}
+}
+
+
+ .falsexml{
+ 	display: none;
+ }

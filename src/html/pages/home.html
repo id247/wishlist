@@ -1,1 +1,94 @@
-<h1>HOME</h1>
+
+<div class="page">
+
+	<header class="page__section header" id="header">
+		
+		<div class="header__wrap wrap">
+
+			<div class="header__menu menu">
+
+				<ul class="menu__list">
+					
+					<li class="menu__item">
+						<a href="#category-1" class="menu__href link js-catalog-href">Ранцы и рюкзаки</a>
+					</li>
+					
+					<li class="menu__item">
+						<a href="#category-2" class="menu__href link js-catalog-href">Сумки для обуви</a>
+					</li>
+
+				</ul> <!-- /.menu__list -->
+
+			</div><!-- /.menu -->
+		
+		</div> <!-- /.header__wrap -->
+
+	</header> <!-- /.header -->
+
+
+	<section class="page__section main" id="main">
+		
+		<div class="main__wrap wrap">
+
+			<div class="main__catalog catalog" id="catalog">
+				
+				<div class="catalog__category" id="category-1">
+					
+
+				</div><!-- /.catalog__category -->
+				
+				<div class="catalog__category" id="category-2">
+					
+
+				</div><!-- /.catalog__category -->
+
+			</div><!-- /#catalog.catalog -->
+
+			<div class="main__wishlist wishlist">
+
+				<ul class="wishlist__list" id="wishlist-list">
+				
+				</ul> <!-- /.wishlist__list -->
+
+				<div class="wishlist__button-placeholder">
+					
+					<a href="#" class="wishlist__button button button--orange button--l hidden" id="js-wishlist-buy" target="_blank">Купить на Озон.ру</a>
+
+				</div><!-- /.wishlist__button-placeholder -->
+				
+			</div><!-- /.main__wishlist -->
+		
+		</div> <!-- /.main__wrap -->
+
+	</section> <!-- /.main -->
+
+
+</div><!-- /.page -->
+
+
+<div class="falsexml" id="falsexml">
+	<div class="falsexml__item" id="falsexml-category-1">
+		<script src="http://www.ozon.ru/PartnerTwinerNew.aspx?revident=03c1d9ab-b038-4744-8a5d-7da64cf5895a"></script>
+	</div><!-- /.falsexml__item -->	
+	<div class="falsexml__item" id="falsexml-category-2">
+		<script src="http://www.ozon.ru/PartnerTwinerNew.aspx?revident=fd050021-ad7d-4daa-890b-fe81b934e988"></script>
+	</div><!-- /.falsexml__item -->	
+	<script>
+		(function(){
+			var images = document.querySelectorAll('.falsexml img');
+			var forDelete = document.querySelectorAll('.falsexml script, .falsexml link');
+
+			console.log(forDelete);
+
+			[].forEach.call(forDelete, function(elem){
+				elem.parentNode.removeChild(elem);
+			});
+
+			[].forEach.call(images, function(image){
+				image.setAttribute('data-src', image.src);
+				image.src = "";
+			});
+
+		})();
+	</script>
+</div><!-- /.shop -->

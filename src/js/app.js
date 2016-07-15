@@ -3,190 +3,200 @@
 export default (function App(window, document, $){
 	console.log('run');
 
-	var maxHeight = 650;
-	var maxWidth = 1020;
+	const ozon = {
+		partnerId: 'dnevnik_ru'
+	}
 
-	var isMobile = (function() { 
-		if( navigator.userAgent.match(/Android/i)
-		|| navigator.userAgent.match(/webOS/i)
-		|| navigator.userAgent.match(/iPhone/i)
-		|| navigator.userAgent.match(/iPad/i)
-		|| navigator.userAgent.match(/iPod/i)
-		|| navigator.userAgent.match(/BlackBerry/i)
-		|| navigator.userAgent.match(/Windows Phone/i)
-		){
-			return true;
-		} else {
-			return false;
-		}
-	})();
+	let store = [];
+	let wishlist = [];
 
-	function scrollMeTo(){
+	function getProducts(){
+		$('.falsexml__item').each(function(){	
+			var item = this;		
+			var tables = item.querySelectorAll('.OzonRev_tbMax');
+			var categoryProducts = [];
+			var categoryId = item.getAttribute('id');
+			var result = '';
 
-		
-		const $header = $('#header');
-		
-		$('.js-goto').on('click', function(e){
-			const paddingTop = $(window).width() > maxWidth ? $header.outerHeight() : 0;
-			const $target = $(this.href.replace( /^.*\#/, '#' ) );
-			
-			if ($target.length === 1) {
-				e.preventDefault();
+			[...tables].slice(1).forEach( table => {
+				var href = table.querySelector('.OzonRev_detailName');
 
-				$('body,html').animate({ 
-					scrollTop: $target.offset().top - paddingTop,
-					easing: 'ease-in'
-				}, 500);
-			};
+				if (!href) {
+					return;
+				}
+				
+				var id = href.href.match(/id\/(\d+)\//)[1];
+				var title = href.text;
+				var link = href.getAttribute('href');
+				var image = table.querySelector('.OzonRev_tdPic img').getAttribute('data-src');
+				var text = table.querySelector('.OzonRev_detailAnnot').innerHTML;
+				
+				categoryProducts.push({id, categoryId, title, link, image, text});
+			});
+
+			store[categoryId] = categoryProducts;
 		});
 
-	};
+		console.log(store);
+	}
 
-	function header(){
-		const $header = $('header');
+	function renderProducts(){
+		const $catalogCategories = $('.catalog__category');
 
+		let category = ''; 
+		
+		$catalogCategories.each(function(){
+			const categoryId = 'falsexml-' + this.getAttribute('id');
+			this.innerHTML = generateList(store[categoryId]);
+		});
 
-		function fix(){
-			const scrollTop = $(window).scrollTop();
-			const showPosition = 200;
+		function generateList(products){
+			let result = '';
 
-			if ( scrollTop > 0 && scrollTop <= showPosition ){
-				$header.addClass('header--hidden');
-				$header.removeClass('header--scrolled');
-			}else if ( scrollTop > showPosition ){
-				$header.addClass('header--scrolled');
-				$header.removeClass('header--hidden');
-			}else{
-				$header.removeClass('header--scrolled');
-				$header.removeClass('header--hidden');
+			products.forEach( product => {
+				result += '<div class="catalog__item catalog-item">';
+				
+				result += '		<div class="catalog-item__image-placeholder">';
+				result += '			<img class="catalog-item__image" data-src="' + product.image + '" />';	
+				result += '		</div>';
+				
+				result += '		<div class="catalog-item__content">';
+
+				result += '			<h3 class="catalog-item__title">';	
+				result += '				<a class="catalog-item__link" href="' + product.link + '" target="_blank">';
+				result += 					product.title;
+				result += '				</a>';
+				result += '			</h3>';
+
+				result += '			<div class="catalog-item__text">';
+				result += 				product.text;
+				result += '			</div>';
+
+				result += '			<div class="catalog-item__button-placeholder">';
+				result += '				<button data-category-id="' + product.categoryId + '" data-product-id="' + product.id + '" class="button button--orange button--m js-add-to-list" target="_blank">';
+				result += '					Купить';
+				result += '				</button>';
+				result += '			</div>';
+
+				result += '		</div>';
+
+				result += '</div>';
+			});
+
+			return result;
+		}
+	}
+
+	function catalog(){
+
+		const $nav = $('.js-catalog-href');
+		const $categories = $('.catalog__category');
+
+		function init(){
+			$nav.eq(0).addClass('active');
+			$categories.not(':first').hide();
+		}
+
+		function navigate($navLink){
+			const target = $navLink.attr('href').substr(0);
+			const $targetCategory = $categories.filter(target);
+			const $images = $targetCategory.find('img[data-src]');
+
+			$nav.removeClass('active');
+			$navLink.addClass('active');
+
+			$categories.hide();
+			$targetCategory.show();
+
+			$images.each(function(){
+				const $this = $(this);
+				const src = $this.attr('data-src');
+				$this.attr('src', src);
+			});	
+		}
+
+		$nav.on('click', function(e){
+			e.preventDefault();
+			navigate($(this));
+		});
+
+		init();
+		navigate($nav.eq(0));
+		
+	}
+
+	function list(){
+
+		const $list = $('#wishlist-list');
+		const $button = $('#js-wishlist-buy');
+
+		$(document).on('click', '.js-add-to-list', function(e){
+			e.preventDefault();
+
+			const $this = $(this);
+			const categoryId = $this.data('category-id');
+			const productId = parseInt($this.data('product-id'));
+			let result = '';
+
+			if (wishlist.indexOf(productId) > -1){ // if already in list
+				return;
 			}
-		}
-		fix();
 
-		$(document).on('scroll', fix);
-	}
+			const product = store[categoryId].filter(item => (parseInt(item.id) === productId) )[0];
 
+			console.log(product);
 
-	function menu(){
-		var $menuHrefs = $('.menu__href');
-		var $sections = $('.section');
+			result += '<li class="wishlist__item wishlist-item">';			
 
-		var winHeight = ( window.innerHeight || document.documentElement.clientHeight );
-
-		function setActive(){						
-			$sections.each(function(index, section){				
-				var sectionId = $(this).attr('id');
-				var rect = this.getBoundingClientRect();
-				var rectTop = Math.round(rect.top);
-				var rectBottom = Math.round(rect.bottom);
-
-				if (rectTop <= 50 && rectBottom / 2 <= winHeight ){
-					$menuHrefs.removeClass('active');
-					$menuHrefs.filter('[href="#' + sectionId + '"]').addClass('active');
-				}
-			});
-		}
-		setActive();
-
-		$(window).on('scroll', function(e){
-			setActive();
-		});
-
-		$(window).on('resize', function(e){
-			winHeight = ( window.innerHeight || document.documentElement.clientHeight );			
-			setActive();
-		});
-
-	}
-
-	/*
-		submit form
-	*/
-
-	function form(){		
-
-		$.extend($.validator.messages, {
-			required: 'Это поле обязательно для заполнения.',
-			remote: 'Please fix this field.',
-			email: 'Введите корректный e-mail адрес.',
-			url: 'Please enter a valid URL.',
-			date: 'Please enter a valid date.',
-			dateISO: 'Please enter a valid date (ISO).',
-			number: 'Введите число.',
-			digits: 'Допустимо вводить только цифры.',
-			creditcard: 'Please enter a valid credit card number.',
-			equalTo: 'Please enter the same value again.',
-			accept: 'Please enter a value with a valid extension.',
-			maxlength: jQuery.validator.format('Please enter no more than {0} characters.'),
-			minlength: jQuery.validator.format('Please enter at least {0} characters.'),
-			rangelength: jQuery.validator.format('Please enter a value between {0} and {1} characters long.'),
-			range: jQuery.validator.format('Please enter a value between {0} and {1}.'),
-			max: jQuery.validator.format('Please enter a value less than or equal to {0}.'),
-			min: jQuery.validator.format('Please enter a value greater than or equal to {0}.')
-		});
-
-		$('form').each( function(){
-
-			const $form = $(this);
-			const $button = $form.find('button[type="submit"]');
-			const $success = $form.find('.order-form__success');
+			result += '		<div class="wishlist-item__image-placeholder">';
+			result += '			<img class="wishlist-item__image" src="' + product.image + '" />';	
+			result += '		</div>';
 			
-			$success.hide();
+			result += '		<div class="wishlist-item__content">';
 
-			$form.validate({
-			});
+			result += '			<h3 class="wishlist-item__title">';	
+			result += '				<a class="wishlist-item__link" href="' + product.link + '" target="_blank">';
+			result += 					product.title;
+			result += '				</a>';
+			result += '			</h3>';
 
-			$form.on('submit', function(e){
+			// result += '			<div class="wishlist-item__text">';
+			// result += 				product.text;
+			// result += '			</div>';
 
-				e.preventDefault();
+			result += '		</div>';					
+						
+			result += '</li>'
 
-				const form = e.target;
+			$list.append(result);
 
-				if ( !$(form).valid() ){
-					return false;
-				}
+			wishlist.push(productId);
 
-				$button.text('Отправка данных...');
-				$button.attr('disabled', true);
+			updateBuyLink();
 
-				$.ajax({
-					url: $form.attr('action'), 
-				    method: 'POST',
-				    data: $form.serialize(),
-				    dataType: 'json',
-				    success: function( response ) {
-				    	console.log(response);
-						$success.html('Спасибо! Ваша заявка была успешно отправлена!');
-						$success.removeClass('order-form__success--error');	
-				    },
-				    error: function(xhr, ajaxOptions, error){
-				    	console.log('Data could not be saved.' + error.message);
-						$success.addClass('order-form__success--error');
-						$success.html('Ошибка сохранения данных, попробуйте еще раз. Если ошибка повторится - свяжитесь с нами.');
-
-				    },
-				    complete: function(){					    	
-				    	$success.show();
-						$button.attr('disabled', false).text('Отправить заявку');			    	
-				    }
-				});				
-				
-				
-
-			});
 		});
 
+		function updateBuyLink(){
+			console.log(wishlist);
+			if (wishlist.length > 0){
+				$button.removeClass('hidden');
+			}else{
+				$button.addClass('hidden');
+			}
+
+			const href = 'http://www.OZON.ru/?context=cart&id=' + wishlist.join(',') +  '&partner=' + ozon.partnerId;
+
+			$button.attr('href', href);
+		}
+
+		updateBuyLink();
 	}
 
 	function init(){
-
-		if (!isMobile){
-			header();
-		}
-
-		scrollMeTo();
-		menu();
-		form();
+		getProducts();
+		renderProducts();
+		catalog();
+		list();
 	}
 
 	return {
