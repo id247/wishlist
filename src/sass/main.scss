@@ -173,6 +173,18 @@
 
 	&__content{
 		margin: 0 0 0 110px;
+		position: relative;
+	}
+
+	&__delete{
+		float: right;
+		margin: 0 0 15px 15px; 
+		font-size: 30px;
+		background: transparent;
+		//border: 0;
+		padding: 0;
+		line-height: 1;
+		display: block;
 	}
 
 	&__title{

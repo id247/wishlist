@@ -31,10 +31,16 @@ export default (function App(window, document, $){
 				var image = table.querySelector('.OzonRev_tdPic img').getAttribute('data-src');
 				var text = table.querySelector('.OzonRev_detailAnnot').innerHTML;
 				
-				categoryProducts.push({id, categoryId, title, link, image, text});
+				//update if item alredy exists
+				const existingProduct = store.filter( product => (product.id == id) );
+				if (existingProduct.length > 0){
+					existingProduct[0].categories.push(categoryId);
+				}else{
+					store.push({id, categories: [categoryId], title, link, image, text});
+				}
+				
 			});
 
-			store[categoryId] = categoryProducts;
 		});
 
 		console.log(store);
@@ -47,7 +53,8 @@ export default (function App(window, document, $){
 		
 		$catalogCategories.each(function(){
 			const categoryId = 'falsexml-' + this.getAttribute('id');
-			this.innerHTML = generateList(store[categoryId]);
+			const products = store.filter( product => (product.categories.indexOf(categoryId) > -1 ) );
+			this.innerHTML = generateList(products);
 		});
 
 		function generateList(products){
@@ -73,7 +80,7 @@ export default (function App(window, document, $){
 				result += '			</div>';
 
 				result += '			<div class="catalog-item__button-placeholder">';
-				result += '				<button data-category-id="' + product.categoryId + '" data-product-id="' + product.id + '" class="button button--orange button--m js-add-to-list" target="_blank">';
+				result += '				<button data-product-id="' + product.id + '" class="button button--orange button--m js-add-to-list" target="_blank">';
 				result += '					Купить';
 				result += '				</button>';
 				result += '			</div>';
@@ -130,49 +137,65 @@ export default (function App(window, document, $){
 		const $list = $('#wishlist-list');
 		const $button = $('#js-wishlist-buy');
 
+		function updateList(){
+			
+			let result = '';
+
+			const products = store.filter( product => (wishlist.indexOf(parseInt(product.id)) > -1) );
+
+			products.forEach( product => {
+
+				result += '<li class="wishlist__item wishlist-item">';			
+
+				result += '		<div class="wishlist-item__image-placeholder">';
+				result += '			<img class="wishlist-item__image" src="' + product.image + '" />';	
+				result += '		</div>';		
+				
+				result += '		<div class="wishlist-item__content">';
+
+				result += '			<button class="wishlist-item__delete js-wishlist-delete" data-product-id="' + product.id + '">&times;</button>';	
+
+				result += '			<h3 class="wishlist-item__title">';	
+				result += '				<a class="wishlist-item__link" href="' + product.link + '" target="_blank">';
+				result += 					product.title;
+				result += '				</a>';
+				result += '			</h3>';
+
+				result += '		</div>';					
+							
+				result += '</li>'
+
+			});
+
+			$list.html(result);
+
+			updateBuyLink();
+		}
+
+		$(document).on('click', '.js-wishlist-delete', function(e){
+			e.preventDefault();
+			const productId = $(this).data('product-id');
+			const index = wishlist.indexOf(productId);
+			if (index > -1) {
+				wishlist.splice(index, 1);
+			}
+			updateList();
+		});
+
 		$(document).on('click', '.js-add-to-list', function(e){
 			e.preventDefault();
 
 			const $this = $(this);
-			const categoryId = $this.data('category-id');
-			const productId = parseInt($this.data('product-id'));
-			let result = '';
 
+			const productId = parseInt($this.data('product-id'));
+			
 			if (wishlist.indexOf(productId) > -1){ // if already in list
 				return;
 			}
-
-			const product = store[categoryId].filter(item => (parseInt(item.id) === productId) )[0];
-
-			console.log(product);
-
-			result += '<li class="wishlist__item wishlist-item">';			
-
-			result += '		<div class="wishlist-item__image-placeholder">';
-			result += '			<img class="wishlist-item__image" src="' + product.image + '" />';	
-			result += '		</div>';
 			
-			result += '		<div class="wishlist-item__content">';
-
-			result += '			<h3 class="wishlist-item__title">';	
-			result += '				<a class="wishlist-item__link" href="' + product.link + '" target="_blank">';
-			result += 					product.title;
-			result += '				</a>';
-			result += '			</h3>';
-
-			// result += '			<div class="wishlist-item__text">';
-			// result += 				product.text;
-			// result += '			</div>';
-
-			result += '		</div>';					
-						
-			result += '</li>'
-
-			$list.append(result);
-
 			wishlist.push(productId);
 
-			updateBuyLink();
+			updateList();
 
 		});
 
@@ -188,7 +211,6 @@ export default (function App(window, document, $){
 
 			$button.attr('href', href);
 		}
-
 		updateBuyLink();
 	}
 
