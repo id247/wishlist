@@ -1,0 +1,31 @@
+<div class="catalog__item catalog-item">
+
+	<div class="catalog-item__image-placeholder">
+		<img class="catalog-item__image" data-src="{{image}}" />	
+	</div>
+
+	<div class="catalog-item__content">
+
+		<h3 class="catalog-item__title">	
+			<a class="catalog-item__link link" href="{{link}}" target="_blank">
+			{{title}}
+			</a>
+		</h3>
+
+		<div class="catalog-item__price">
+			Цена: {{price}} {{currency}}
+		</div>
+
+		<div class="catalog-item__text">
+			{{{text}}}
+		</div>
+
+		<div class="catalog-item__button-placeholder">
+			<button data-product-id="{{id}}" class="button button--orange button--m js-add-to-list">
+				Купить
+			</button>
+		</div>
+
+	</div>
+
+</div>

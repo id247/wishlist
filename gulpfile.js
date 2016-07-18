@@ -228,7 +228,7 @@ gulp.task('server', function () {
 gulp.task('watch', function(){
 	gulp.watch('src/sass/**/*.scss', gulp.series('sass'));
 	gulp.watch('src/assets/**/*', gulp.series('assets'));
-	gulp.watch(['src/js/**/*.js', 'my_modules/**/*.js'], gulp.series('webpack'));
+	gulp.watch(['src/js/**/*.js', 'my_modules/**/*.js', 'src/js/**/*.hbs'], gulp.series('webpack'));
 	gulp.watch('src/html/**/*.html', gulp.series('html'));
 });
 

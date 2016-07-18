@@ -1,6 +1,10 @@
 'use strict';
 
 import cookies from 'js-cookie';
+import Handlebars from 'handlebars';
+
+import catalogItemTemplate from './hbs/catalog-item.hbs';
+import wishlistItemTemplate from './hbs/wishlist-item.hbs';
 
 export default (function App(window, document, $){
 	console.log('run');
@@ -22,7 +26,7 @@ export default (function App(window, document, $){
 			var categoryId = item.getAttribute('id');
 			var product = {};
 
-			[...tables].slice(1).forEach( table => {
+			[...tables].forEach( table => {
 				var href = table.querySelector('.OzonRev_detailName');
 
 				if (!href) {
@@ -72,37 +76,7 @@ export default (function App(window, document, $){
 			let result = '';
 
 			products.forEach( product => {
-				result += '<div class="catalog__item catalog-item">';
-				
-				result += '		<div class="catalog-item__image-placeholder">';
-				result += '			<img class="catalog-item__image" data-src="' + product.image + '" />';	
-				result += '		</div>';
-				
-				result += '		<div class="catalog-item__content">';
-
-				result += '			<h3 class="catalog-item__title">';	
-				result += '				<a class="catalog-item__link" href="' + product.link + '" target="_blank">';
-				result += 					product.title;
-				result += '				</a>';
-				result += '			</h3>';
-
-				result += '			<div class="catalog-item__price">';
-				result += 				'Цена: ' + product.price + ' ' + product.currency ;
-				result += '			</div>';
-
-				result += '			<div class="catalog-item__text">';
-				result += 				product.text;
-				result += '			</div>';
-
-				result += '			<div class="catalog-item__button-placeholder">';
-				result += '				<button data-product-id="' + product.id + '" class="button button--orange button--m js-add-to-list" target="_blank">';
-				result += '					Купить';
-				result += '				</button>';
-				result += '			</div>';
-
-				result += '		</div>';
-
-				result += '</div>';
+				result += catalogItemTemplate(product);
 			});
 
 			return result;
@@ -159,41 +133,12 @@ export default (function App(window, document, $){
 			let totalPrice = 0;
 			let currency = 0;
 
-			console.log(store.length);
-			console.log(wishlist);
 			const products = store.filter( product => (wishlist.indexOf(parseInt(product.id)) > -1) );
 			
-			console.log(products);
-
 			products.forEach( product => {
-
-				result += '<li class="wishlist__item wishlist-item">';			
-
-				result += '		<div class="wishlist-item__image-placeholder">';
-				result += '			<img class="wishlist-item__image" src="' + product.image + '" />';	
-				result += '		</div>';		
-				
-				result += '		<div class="wishlist-item__content">';
-
-				result += '			<button class="wishlist-item__delete js-wishlist-delete" data-product-id="' + product.id + '">&times;</button>';	
-
-				result += '			<h3 class="wishlist-item__title">';	
-				result += '				<a class="wishlist-item__link" href="' + product.link + '" target="_blank">';
-				result += 					product.title;
-				result += '				</a>';
-				result += '			</h3>';
-
-				result += '			<div class="wishlist-item__price">';
-				result += 				'Цена: ' + product.price + ' ' + product.currency ;
-				result += '			</div>';
-
-				result += '		</div>';					
-							
-				result += '</li>';
-
+				result += wishlistItemTemplate(product);	
 				totalPrice += parseInt(product.price);
 				currency = product.currency;
-
 			});
 
 			$list.html(result);
@@ -207,8 +152,6 @@ export default (function App(window, document, $){
 				$button.addClass('hidden');
 				$totalPrice.addClass('hidden');
 			}
-
-			
 		}
 
 		function setCookies(){

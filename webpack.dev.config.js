@@ -36,7 +36,13 @@ module.exports = {
 					cacheDirectory: true,
 					presets: ['es2015']
 				}
-			}
+			},
+            {   test: /\.hbs$/, 
+                loader: 'handlebars-loader',
+                include: [
+                    __dirname + '/src/js/hbs',
+                ]
+            }
 		]
 	},
 	plugins: []

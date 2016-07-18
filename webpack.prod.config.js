@@ -42,7 +42,13 @@ module.exports = {
 					__dirname + '/src/js'
 				], 
 				loader: 'strip-loader?strip[]=console.log' 
-			}
+			},
+            {   test: /\.hbs$/, 
+                loader: 'handlebars-loader',
+                include: [
+                    __dirname + '/src/js/hbs',
+                ]
+            }
 		]
 	},
 	plugins: [     
