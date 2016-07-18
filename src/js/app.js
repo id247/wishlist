@@ -150,11 +150,14 @@ export default (function App(window, document, $){
 	function list(){
 
 		const $list = $('#wishlist-list');
+		const $totalPrice = $('#wishlist-total-price');
 		const $button = $('#js-wishlist-buy');
 
 		function updateList(){
 			
 			let result = '';
+			let totalPrice = 0;
+			let currency = 0;
 
 			console.log(store.length);
 			console.log(wishlist);
@@ -186,18 +189,23 @@ export default (function App(window, document, $){
 
 				result += '		</div>';					
 							
-				result += '</li>'
+				result += '</li>';
+
+				totalPrice += parseInt(product.price);
+				currency = product.currency;
 
 			});
 
 			$list.html(result);
-
+			$totalPrice.html('Общая сумма: ' + totalPrice + ' ' + currency);
 			updateBuyLink();
 
 			if (products.length > 0){
 				$button.removeClass('hidden');
+				$totalPrice.removeClass('hidden');
 			}else{
 				$button.addClass('hidden');
+				$totalPrice.addClass('hidden');
 			}
 
 			
