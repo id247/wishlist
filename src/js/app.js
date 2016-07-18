@@ -12,22 +12,20 @@ export default (function App(window, document, $){
 	const ozon = {
 		partnerId: 'dnevnik_ru'
 	}
+	const cookieName = 'ozon_wishlist';
 
 	let store = [];
 	let wishlist = [];
 
-	const cookieName = 'ozon_wishlist';
-
 	function getProducts(){
 		$('.falsexml__item').each(function(){	
-			var item = this;		
-			var tables = item.querySelectorAll('.OzonRev_tbMax');
-			var categoryProducts = [];
-			var categoryId = item.getAttribute('id');
-			var product = {};
+			const item = this;		
+			const tables = item.querySelectorAll('.OzonRev_tbMax');
+			
+			const categoryId = item.getAttribute('id');
 
 			[...tables].forEach( table => {
-				var href = table.querySelector('.OzonRev_detailName');
+				let href = table.querySelector('.OzonRev_detailName');
 
 				if (!href) {
 					return;
@@ -35,12 +33,13 @@ export default (function App(window, document, $){
 				//update if item alredy exists
 				const id = href.href.match(/id\/(\d+)\//)[1];
 				const existingProduct = store.filter( product => (product.id == id) );
+				
 				if (existingProduct.length > 0){
 					existingProduct[0].categories.push(categoryId);
 					return;
 				}
 
-				product = {
+				const product = {
 					id: id,
 					categories: [categoryId],
 					title: href.text,
@@ -88,11 +87,6 @@ export default (function App(window, document, $){
 		const $nav = $('.js-catalog-href');
 		const $categories = $('.catalog__category');
 
-		function init(){
-			$nav.eq(0).addClass('active');
-			$categories.not(':first').hide();
-		}
-
 		function navigate($navLink){
 			const target = $navLink.attr('href').substr(0);
 			const $targetCategory = $categories.filter(target);
@@ -109,6 +103,11 @@ export default (function App(window, document, $){
 				const src = $this.attr('data-src');
 				$this.attr('src', src);
 			});	
+		}
+
+		function init(){
+			$nav.eq(0).addClass('active');
+			$categories.not(':first').hide();
 		}
 
 		$nav.on('click', function(e){
@@ -176,12 +175,13 @@ export default (function App(window, document, $){
 
 		function init(){
 			const cookiesWishlist = getCookies();
-			let tempWishlist
+
 			if (cookiesWishlist){
-				tempWishlist = cookiesWishlist.split(',').map(id => parseInt(id));
+				const tempWishlist = cookiesWishlist.split(',').map(id => parseInt(id));
 
 				//only ids wich are in store
-				wishlist = store.filter( product => (tempWishlist.indexOf(parseInt(product.id)) > -1) ).map( product => parseInt(product.id));
+				wishlist = store.filter( product => (tempWishlist.indexOf(parseInt(product.id)) > -1) )
+								.map( product => parseInt(product.id));
 			}
 			updateList();
 		}
