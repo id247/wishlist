@@ -25,11 +25,23 @@
 
 .page{
 
+	min-height: 100vh;
+	position: relative;
+
 	&__section{
 		margin: 0 0 50px;
 		&:last-child{
 			margin-bottom: 0;
 		}
+	}
+
+	&__loader{
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 500;
 	}
 }
 
@@ -72,6 +84,7 @@
  * ========================================================================== */
 
 .main{
+	position: relative;
 
 	&__catalog{
 		float: left;
@@ -81,6 +94,20 @@
 	&__wishlist{
 		float: right;
 		width: 35%;
+	}
+}
+
+/* ==========================================================================
+ * loader
+ * ========================================================================== */
+
+.loader{
+	background: rgba(0,0,0,.5);
+	color: #fff; 	
+	text-align: center;
+	padding: 300px 0;
+	&__content{
+		font-size: 20px;
 	}
 }
 
@@ -123,6 +150,11 @@
 	&__title{
 		margin: 0 0 20px;
 		font-size: 20px;
+	}
+
+	&__price{
+		margin: 0 0 20px;
+		font-size: 30px;
 	}
 
 	&__text{
@@ -174,6 +206,10 @@
 	&__content{
 		margin: 0 0 0 110px;
 		position: relative;
+	}
+
+	&__price{
+		font-size: 18px;
 	}
 
 	&__delete{

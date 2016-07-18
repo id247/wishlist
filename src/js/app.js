@@ -20,7 +20,7 @@ export default (function App(window, document, $){
 			var tables = item.querySelectorAll('.OzonRev_tbMax');
 			var categoryProducts = [];
 			var categoryId = item.getAttribute('id');
-			var result = '';
+			var product = {};
 
 			[...tables].slice(1).forEach( table => {
 				var href = table.querySelector('.OzonRev_detailName');
@@ -28,21 +28,26 @@ export default (function App(window, document, $){
 				if (!href) {
 					return;
 				}
-				
-				var id = href.href.match(/id\/(\d+)\//)[1];
-				var title = href.text;
-				var link = href.getAttribute('href');
-				var image = table.querySelector('.OzonRev_tdPic img').getAttribute('data-src');
-				var text = table.querySelector('.OzonRev_detailAnnot').innerHTML;
-				
 				//update if item alredy exists
+				const id = href.href.match(/id\/(\d+)\//)[1];
 				const existingProduct = store.filter( product => (product.id == id) );
 				if (existingProduct.length > 0){
 					existingProduct[0].categories.push(categoryId);
-				}else{
-					store.push({id, categories: [categoryId], title, link, image, text});
+					return;
 				}
-				
+
+				product = {
+					id: id,
+					categories: [categoryId],
+					title: href.text,
+					link: href.getAttribute('href'),
+					image: table.querySelector('.OzonRev_tdPic img').getAttribute('data-src'),
+					text: table.querySelector('.OzonRev_detailAnnot').innerHTML,
+					price: table.querySelector('.OzonRev_priceValue > b').innerHTML,
+					currency: table.querySelector('.OzonRev_priceCurrency').innerHTML,
+
+				}
+				store.push(product);				
 			});
 
 		});
@@ -52,6 +57,7 @@ export default (function App(window, document, $){
 
 	function renderProducts(){
 		const $catalogCategories = $('.catalog__category');
+		const $loader = $('#loader');
 
 		let category = ''; 
 		
@@ -59,6 +65,7 @@ export default (function App(window, document, $){
 			const categoryId = 'falsexml-' + this.getAttribute('id');
 			const products = store.filter( product => (product.categories.indexOf(categoryId) > -1 ) );
 			this.innerHTML = generateList(products);
+			$loader.hide();
 		});
 
 		function generateList(products){
@@ -78,6 +85,10 @@ export default (function App(window, document, $){
 				result += 					product.title;
 				result += '				</a>';
 				result += '			</h3>';
+
+				result += '			<div class="catalog-item__price">';
+				result += 				'Цена: ' + product.price + ' ' + product.currency ;
+				result += '			</div>';
 
 				result += '			<div class="catalog-item__text">';
 				result += 				product.text;
@@ -145,11 +156,10 @@ export default (function App(window, document, $){
 			
 			let result = '';
 
-			if (wishlist.length === 0){
-				return false;
-			}
-
+			console.log(store.length);
+			console.log(wishlist);
 			const products = store.filter( product => (wishlist.indexOf(parseInt(product.id)) > -1) );
+			
 			console.log(products);
 
 			products.forEach( product => {
@@ -170,6 +180,10 @@ export default (function App(window, document, $){
 				result += '				</a>';
 				result += '			</h3>';
 
+				result += '			<div class="wishlist-item__price">';
+				result += 				'Цена: ' + product.price + ' ' + product.currency ;
+				result += '			</div>';
+
 				result += '		</div>';					
 							
 				result += '</li>'
@@ -179,10 +193,22 @@ export default (function App(window, document, $){
 			$list.html(result);
 
 			updateBuyLink();
+
+			if (products.length > 0){
+				$button.removeClass('hidden');
+			}else{
+				$button.addClass('hidden');
+			}
+
+			
 		}
 
 		function setCookies(){
-			cookies.set(cookieName, wishlist.toString(), { expires: 100, path: ''});
+			if ( wishlist.length > 0){
+				cookies.set(cookieName, wishlist.toString(), { expires: 100, path: ''});
+			}else{
+				cookies.set(cookieName, false, { expires: -1, path: ''});
+			}			
 		}
 
 		function getCookies(){
@@ -191,11 +217,6 @@ export default (function App(window, document, $){
 
 		function updateBuyLink(){
 			console.log(wishlist);
-			if (wishlist.length > 0){
-				$button.removeClass('hidden');
-			}else{
-				$button.addClass('hidden');
-			}
 
 			const href = 'http://www.OZON.ru/?context=cart&id=' + wishlist.join(',') +  '&partner=' + ozon.partnerId;
 
@@ -204,11 +225,14 @@ export default (function App(window, document, $){
 
 		function init(){
 			const cookiesWishlist = getCookies();
+			let tempWishlist
 			if (cookiesWishlist){
-				wishlist = cookiesWishlist.split(',').map(id => parseInt(id));
+				tempWishlist = cookiesWishlist.split(',').map(id => parseInt(id));
+
+				//only ids wich are in store
+				wishlist = store.filter( product => (tempWishlist.indexOf(parseInt(product.id)) > -1) ).map( product => parseInt(product.id));
 			}
 			updateList();
-			updateBuyLink();
 		}
 		init();
 
