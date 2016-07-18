@@ -1,5 +1,7 @@
 'use strict';
 
+import cookies from 'js-cookie';
+
 export default (function App(window, document, $){
 	console.log('run');
 
@@ -9,6 +11,8 @@ export default (function App(window, document, $){
 
 	let store = [];
 	let wishlist = [];
+
+	const cookieName = 'ozon_wishlist';
 
 	function getProducts(){
 		$('.falsexml__item').each(function(){	
@@ -141,7 +145,12 @@ export default (function App(window, document, $){
 			
 			let result = '';
 
+			if (wishlist.length === 0){
+				return false;
+			}
+
 			const products = store.filter( product => (wishlist.indexOf(parseInt(product.id)) > -1) );
+			console.log(products);
 
 			products.forEach( product => {
 
@@ -172,6 +181,38 @@ export default (function App(window, document, $){
 			updateBuyLink();
 		}
 
+		function setCookies(){
+			cookies.set(cookieName, wishlist.toString(), { expires: 100, path: ''});
+		}
+
+		function getCookies(){
+			return cookies.get(cookieName);
+		}
+
+		function updateBuyLink(){
+			console.log(wishlist);
+			if (wishlist.length > 0){
+				$button.removeClass('hidden');
+			}else{
+				$button.addClass('hidden');
+			}
+
+			const href = 'http://www.OZON.ru/?context=cart&id=' + wishlist.join(',') +  '&partner=' + ozon.partnerId;
+
+			$button.attr('href', href);
+		}
+
+		function init(){
+			const cookiesWishlist = getCookies();
+			if (cookiesWishlist){
+				wishlist = cookiesWishlist.split(',').map(id => parseInt(id));
+			}
+			updateList();
+			updateBuyLink();
+		}
+		init();
+
+
 		$(document).on('click', '.js-wishlist-delete', function(e){
 			e.preventDefault();
 			const productId = $(this).data('product-id');
@@ -180,6 +221,7 @@ export default (function App(window, document, $){
 				wishlist.splice(index, 1);
 			}
 			updateList();
+			setCookies();
 		});
 
 		$(document).on('click', '.js-add-to-list', function(e){
@@ -196,22 +238,10 @@ export default (function App(window, document, $){
 			wishlist.push(productId);
 
 			updateList();
+			setCookies();
 
 		});
 
-		function updateBuyLink(){
-			console.log(wishlist);
-			if (wishlist.length > 0){
-				$button.removeClass('hidden');
-			}else{
-				$button.addClass('hidden');
-			}
-
-			const href = 'http://www.OZON.ru/?context=cart&id=' + wishlist.join(',') +  '&partner=' + ozon.partnerId;
-
-			$button.attr('href', href);
-		}
-		updateBuyLink();
 	}
 
 	function init(){
