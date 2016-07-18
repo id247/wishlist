@@ -6,15 +6,12 @@ import navigationItemTemplate from '../hbs/navigation-item.hbs';
 
 const Render = (function(window, document, $){
 	
-	const $catalog = $('#catalog');
-	const $navigation = $('#menu-list');
-
 	let categories = [];
 
-	let $navLinks;
-	let $catalogCategories;
-
-	let DOM = {};
+	let DOM = {
+		catalog: $('#catalog'),
+		navigation: $('#menu-list'),
+	};
 
 	function renderCategory(store, wishlist, categoryId){			
 		let result = '';
@@ -43,13 +40,13 @@ const Render = (function(window, document, $){
 			});
 		});
 
-		$catalog.html(catalog);
-		$navigation.html(navigation);
+		DOM.catalog.html(catalog);
+		DOM.navigation.html(navigation);
 
-		DOM.catalogCategories = $catalog.find('.catalog__category');
-		DOM.buyButtons = $catalog.find('.js-add-to-list');
+		DOM.catalogCategories = DOM.catalog.find('.catalog__category');
+		DOM.buyButtons = DOM.catalog.find('.js-add-to-list');
 
-		DOM.navLinks = $navigation.find('.js-catalog-href');
+		DOM.navLinks = DOM.navigation.find('.js-catalog-href');
 		
 	}
 

@@ -4,11 +4,15 @@ import wishlistItemTemplate from '../hbs/wishlist-item.hbs';
 
 const RenderWishlist = (function(window, document, $){
 
-	const $list = $('#wishlist-list');
-	const $totalPrice = $('#wishlist-total-price');
-	const $button = $('#js-wishlist-buy');
+
 
 	let partnerId;
+
+	let DOM = {
+		list: $('#wishlist-list'),
+		totalPrice: $('#wishlist-total-price'),
+		ozonButton: $('#js-wishlist-buy'),
+	}
 		
 	function render(store, wishlist){
 		console.log(wishlist);
@@ -24,8 +28,8 @@ const RenderWishlist = (function(window, document, $){
 			currency = product.currency;
 		});
 
-		$list.html(result);
-		$totalPrice.html('Общая сумма: ' + totalPrice + ' ' + currency);	
+		DOM.list.html(result);
+		DOM.totalPrice.html('Общая сумма: ' + totalPrice + ' ' + currency);	
 
 		updateBuyLink(wishlist);
 
@@ -41,17 +45,17 @@ const RenderWishlist = (function(window, document, $){
 
 		const href = 'http://www.OZON.ru/?context=cart&id=' + wishlist.join(',') +  '&partner=' + partnerId;
 
-		$button.attr('href', href);
+		DOM.ozonButton.attr('href', href);
 	}
 
 	function showList(){
-		$button.removeClass('hidden');
-		$totalPrice.removeClass('hidden');
+		DOM.ozonButton.removeClass('hidden');
+		DOM.totalPrice.removeClass('hidden');
 	}	
 
 	function hideList(){
-		$button.addClass('hidden');
-		$totalPrice.addClass('hidden');
+		DOM.ozonButton.addClass('hidden');
+		DOM.totalPrice.addClass('hidden');
 	}	
 
 	function init(options){
